@@ -55,6 +55,9 @@ export const Navbar = () => {
 							>
 								Favorites <span className="counter">{store.counter}</span>
 							</button>
+							<Link to="/login">
+								<button className="btn btn-primary">Login</button>
+							</Link>
 
 							<button
 								className="btn btn-secondary dropdown-toggle me-3 d-block d-md-none"

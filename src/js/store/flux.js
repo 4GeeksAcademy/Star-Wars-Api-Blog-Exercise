@@ -14,10 +14,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             counter: 0,
 
+            auth: false, 
+
         },
 
 
         actions: {
+
+            validToken: async () => {
+                try {
+                    let response = await fetch('https://psychic-space-orbit-x55wrxwpjpr7crvg-3000.app.github.dev/valid_token', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMjI1NzEyNywianRpIjoiNGJhYjhiZjAtZDFmMC00ZmE0LTlkYzItYWExZjcwMDNiNmI3IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImJhcmJhcmFwdXlvbGZvbnRAZ21haWwuY29tIiwibmJmIjoxNzEyMjU3MTI3LCJjc3JmIjoiNmI4NzNlNjEtNjRlOC00MmZkLThhY2EtOGI0ZDk1N2MwZWVlIiwiZXhwIjoxNzEyMjU4MDI3fQ.VxxlrDrBkCpf17TXKjE9CwYJzdre3VVM6bA3mcVblWY',
+                        },
+                });
+                    let data = await response.json();
+                    if (response.status === 200) {
+                        setStore({auth: data.is_})
+                    }
+                    console.log(data);
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+            
 
             addFavorites: (name) => {
                 setStore({
@@ -135,6 +157,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                             }
                         };
 
+                        
                         while (starshipsDetailsWithPropertiesCount < maxStarships && totalStarshipsDetailsChecked < maxStarships * 2) {
                             const starshipDetailsData = await fetchStarshipDetailsData(totalStarshipsDetailsChecked + 1);
                             if (starshipDetailsData) {
@@ -153,10 +176,35 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error('Error getting starships details:', error);
                 }
             },
+            login: async (email, password) => {
+                try {
+                    const response = await fetch('https://psychic-space-orbit-x55wrxwpjpr7crvg-3000.app.github.dev/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password
+                        })
+                    });
+            
+                    if (response.status !== 200) {
+                        console.log('Login failed:', response.statusText);
+                        return false;
+                    }
+            
+                    const data = await response.json();
+                    console.log('Login successful:', data);
+                    localStorage.setItem ('token', data.access_token);
+                    return true;
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    return false;
+                }
+            },
 
         }
     };
-
-};
-
+}
 export default getState;
